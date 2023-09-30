@@ -1,0 +1,105 @@
+package Tut1.Exercise3;
+public class Vehicle {
+    private String name;
+    private double width;
+    private double height;
+    private double length;
+    private double weight;
+    private int seatingCapacity;
+    private String registrationNumber;
+    private int registrationNumberLength = 12;
+    
+    public Vehicle(String name, double width, double height,
+                   double length, double weight, int seatingCapacity,
+            String registrationNumber) {
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        this.length = length;
+        this.weight = weight;
+        this.seatingCapacity = seatingCapacity;
+        this.registrationNumber = validregistrationNumber(registrationNumber, registrationNumberLength);
+    }
+
+//getters and setters for attributes
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getWidth() {
+        return this.width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getHeight() {
+        return this.height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getLength() {
+        return this.length;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    public double getWeight() {
+        return this.weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public int getSeatingCapacity() {
+        return this.seatingCapacity;
+    }
+
+    public void setSeatingCapacity(int seatingCapacity) {
+        this.seatingCapacity = seatingCapacity;
+    }
+
+    public String getRegistrationNumber() {
+        return this.registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public static String validregistrationNumber(String registrationNumber,
+            int registrationNumberLength) {
+        if (registrationNumber.length() <= registrationNumberLength) {
+            return registrationNumber;
+        } else
+            throw new IllegalArgumentException("The registration number length must not exceeds " +
+                    registrationNumberLength + " alpha-numerical characters.");
+    }
+    // Ex4 week 2 
+    public void travel(String pointA, String pointB, int passengers) {
+        String vehicleSymbol = getVehicleSymbol(); // Call the specialized method to get the symbol
+        System.out.println(vehicleSymbol + " Travelling from " + pointA + " to " + pointB +
+                           " with " + passengers + " passengers.");
+    }
+
+    protected String getVehicleSymbol() {
+        return "V"; // Default symbol for the base Vehicle class
+    }
+    
+    public String toString() {
+        return this.getClass().getSimpleName() + " [name=" + name + ", width=" + width + ", heigh=" + height +
+                ", weight=" + weight + ", length=" + length + ", seatingCapacity=" +  seatingCapacity +
+                ", registrationNumber=" + registrationNumber + "]";
+    }
+}
