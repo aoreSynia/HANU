@@ -4,27 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Doc {
-    private List<Word> title = new ArrayList<Word>();
-    private List<Word> body = new ArrayList<Word>();
+    private List<Word> title;
+    private List<Word> body;
 
     public Doc(String content) {
+        // Split the content into title and body based on the assignment rules.
         String[] lines = content.split("\n");
-
-        boolean isTitle = true;
-
-        for (String line : lines) {
-            if (line.trim().isEmpty()) {
-                isTitle = false;
-                continue;
-            }
-
-            List<Word> words = splitTextIntoWords(line);
-
-            if (isTitle) {
-                title.addAll(words);
-            } else {
-                body.addAll(words);
-            }
+        if (lines.length == 2) {
+            title = parseText(lines[0]);
+            body = parseText(lines[1]);
+        } else {
+            title = new ArrayList<>();
+            body = new ArrayList<>();
         }
     }
 
@@ -41,20 +32,19 @@ public class Doc {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Doc otherDoc = (Doc) o;
+        Doc doc = (Doc) o;
 
-        return title.equals(otherDoc.title) && body.equals(otherDoc.body);
+        return (title != null ? title.equals(doc.title) : doc.title == null) &&
+               (body != null ? body.equals(doc.body) : doc.body == null);
     }
 
-    // Helper method to split a line of text into words (using space as a delimiter)
-    private List<Word> splitTextIntoWords(String text) {
-        String[] wordsArray = text.split(" ");
-        List<Word> wordsList = new ArrayList<>();
-
-        for (String wordText : wordsArray) {
-            wordsList.add(Word.createWord(wordText));
+    // Helper method to parse a text into a list of Word objects
+    private List<Word> parseText(String text) {
+        String[] words = text.split("\\s+");
+        List<Word> wordList = new ArrayList<>();
+        for (String word : words) {
+            wordList.add(Word.createWord(word));
         }
-
-        return wordsList;
+        return wordList;
     }
 }
