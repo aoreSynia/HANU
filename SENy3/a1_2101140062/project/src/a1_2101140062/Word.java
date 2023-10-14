@@ -73,12 +73,12 @@ public class Word {
     }
 
     // Public static methods
-    public static Word createWord(String rawText){
+    public static Word createWord(String rawText) {
 
         String prefix = "";
         String text = "";
         String suffix = "";
-        
+
         boolean isTextStarted = false; // Sử dụng cờ để xác định khi nào text bắt đầu
 
         for (int i = 0; i < rawText.length(); i++) {
@@ -94,15 +94,17 @@ public class Word {
                 text += character;
             }
         }
-        // for (int i = 0; i < rawText.length(); i++) {
-        //     char character = rawText.charAt(i);
-        //     if (Character.toString(character).matches("[0-9]") && Character.toString(character).matches(".*[,.@#$%].*")) {
-        //         text += character;
-        //     }
-        // }
-        // prefix = "";
-        // suffix = "";
-
+        for (int i = 0; i < rawText.length(); i++) {
+            char character = rawText.charAt(i);
+            if (Character.toString(character).matches("[0-9]")
+                    || Character.toString(character).matches("[,.@#$%]")
+                    || Character.toString(character).contains("\\s+")) {
+                text += character;
+            }
+        }
+        prefix = "";
+        suffix = "";
+        // handle the word like what's
         if (rawText.endsWith("'s")) {
             // Handle's as part of the suffix
             int index = rawText.lastIndexOf("'s");
@@ -113,17 +115,33 @@ public class Word {
                 suffix = rawText.substring(index);
             }
         }
-        
-        if (rawText.contains(" ") || rawText.matches("0-9")) {
-            prefix = "";
-            text = rawText;
-            suffix = "";
+        // handle the word like haven't can't ... 
+        if (rawText.endsWith("'t")) {
+            // Handle's as part of the suffix
+            int index = rawText.lastIndexOf("'t");
+            if (index > 0) {
+                prefix = "";
+                // Xoá 's khỏi rawtext sau đó thêm vào trong suffix 
+                text = rawText.substring(0, index);
+                suffix = rawText.substring(index);
+            }
         }
+
+        // if (rawText.contains(" ") || rawText.matches("0-9")) {
+        //     prefix = "";
+        //     text = rawText;
+        //     suffix = "";
+        // }
 
         // trả lại 1 word mới
         return new Word(prefix, text, suffix);
 
     }
+    public static boolean isALetter(char character) {
+        String validCharacters = "1234567890!@#$%^&*";
+        return validCharacters.indexOf(character) != -1;
+    }
+    
     
 
     public static boolean loadStopWords(String fileName) {
