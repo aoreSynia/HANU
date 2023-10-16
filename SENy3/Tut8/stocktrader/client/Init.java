@@ -13,7 +13,8 @@ public class Init {
         sv.currentDate = LocalTime.now();
         // Logging in
         try {
-            sv.login("Kian", "stay123");
+
+            sv.login("nam", "pass1");
             String stockList = sv.listAllStocks();
             System.out.println(stockList);
 
@@ -25,6 +26,8 @@ public class Init {
             sv.nextDay();
             String afterDayStockList = sv.listAllStocks();
             System.out.println("Stock prices have been updated after one day:\n" + afterDayStockList);
+
+            System.out.println("User total balance :" + sv.checkBalance());
         } catch (AccessDeniedException e) {
             System.err.println("Access denied: " + e.getMessage());
         }
