@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ public class StockServer {
     private ArrayList<Stock> stocks;
     private ArrayList<StockInformation> userStocks;
     private ArrayList<StockInformation> userHistory;
+    private Double userMoney;
     private boolean isLoggedIn;
     public LocalTime currentDate; 
 
@@ -67,49 +69,10 @@ public class StockServer {
         return stocks;
     }
     //read userdata
-    // public ArrayList<StockInformation> readUserData(String userData_fileName, String history_fileName) {
-    //     int lastDotIndex_userStock = userData_fileName.lastIndexOf(".");
-    //     int lastDotIndex_userHistory = history_fileName.lastIndexOf("_");
-    //     int cur = 0;
-
-    //     ArrayList<StockInformation> userStocks = new ArrayList<StockInformation>() ;
-
-    //     try (BufferedReader reader = new BufferedReader(new FileReader(userData_fileName))) {
-    //         String username = userData_fileName.substring(0, lastDotIndex_userStock);
-    //         String line;
-    
-    //         while ((line = reader.readLine()) != null) {
-    //             String[] parts = line.split(" ");
-    
-    //             if (parts.length >= 2) {
-    //                 if (parts[0].equalsIgnoreCase("money")) {
-    //                     Double userMoney = Double.parseDouble(parts[1].trim());
-    //                     // Find the user with the matching username and set their userMoney
-    //                     for (User user : users) {
-    //                         if (user.getUsername().equalsIgnoreCase(username)) {
-    //                             user.setUserMoney(userMoney);
-    //                         }
-    //                     }
-    //                 } else if (parts.length == 3) {
-    //                     String stockName = parts[0].trim();
-    //                     Double stockPrice = Double.parseDouble(parts[1].trim());
-    //                     Integer stockQuantity = Integer.parseInt(parts[2].trim()) ;
-
-    //                     Stock stock = new Stock(stockName, stockPrice, stockQuantity);
-    //                     userStocks.add(stock);
-    //                 } 
-    //                 // Here, you can handle other user-specific data if needed.
-    //             }
-    //         }
-    //     } catch (IOException e) {
-    //         e.printStackTrace(); // Handle the exception properly in your application
-    //     }
-    // }
     public void readUserData(String userDataFileName, String historyFileName) {
         userStocks = new ArrayList<>();
         userHistory = new ArrayList<>();
-        User pointer -
-    
+        
         // Đọc dữ liệu từ tệp "username.txt"
         try (BufferedReader reader = new BufferedReader(new FileReader(userDataFileName))) {
             String line;
@@ -117,8 +80,7 @@ public class StockServer {
                 String[] parts = line.split(" ");
                 if (parts.length >= 2) {
                     if (parts[0].equalsIgnoreCase("money")) {
-                        Double userMoney = Double.parseDouble(parts[1].trim());
-                        setUserMoney(userMoney);
+                        userMoney = Double.parseDouble(parts[1].trim());
                     } else if (parts.length == 3) {
                         String stockName = parts[0].trim();
                         Double stockPrice = Double.parseDouble(parts[1].trim());
@@ -135,7 +97,7 @@ public class StockServer {
         }
     
         // Đọc dữ liệu từ tệp "username_history.txt"
-        try (BufferedReader reader = new BufferedReader(new FileReader(historyFileName)) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(historyFileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(" ");
@@ -154,6 +116,7 @@ public class StockServer {
             e.printStackTrace(); // Xử lý ngoại lệ phù hợp trong ứng dụng của bạn
         }
     }
+    
     
     
     public class AccessDeniedException extends Exception {
@@ -175,14 +138,18 @@ public class StockServer {
                 // Thêm đoạn code để đọc dữ liệu từ các tệp username.txt và "username"_history.txt
                 String userDataFileName = "data\\userdata\\" + username + ".txt";
                 String userHistoryFileName = "data\\userdata\\" + username + "_history.txt";
-                userStocks = readUserData(userDataFileName, userHistoryFileName);
+                readUserData(userDataFileName, userHistoryFileName);
                 
                 return isLoggedIn = true;
             }
         }
         throw new AccessDeniedException();
     }
-    
+        
+    public String getUserMoney(){
+        String money = userMoney.toString();
+        return money;
+    }
     
 
     public String listAllStocks() {
@@ -207,22 +174,17 @@ public class StockServer {
     }
     public String listOwnStocks() {
         StringBuilder printer = new StringBuilder();
-        
-        for (StockInformation stockInfo : userStocks) {
+    
+        for (int i = 0; i < userStocks.size(); i++) {
+            StockInformation stockInfo = userStocks.get(i);
             Stock stock = stockInfo.getStock();
-            printer.append(String.format("Stock %d: %s (Price: %.2f, Quantity: %d)\n", 
-                stock.getName(), stock.getPrice(), stock.getQuantity()));
+            printer.append(String.format("Stock %d: %s (Price: %.2f, Quantity: %d)\n",
+                    i + 1, stock.getName(), stock.getPrice(), stock.getQuantity()));
         }
-
-        // for (int i = 0; i < userStocks.size(); i++) {
-        //     StockInformation stockInfo = userStocks.get(i);
-        //     Stock stock = stockInfo.getStock();
-        //     result.append(String.format("Stock %d: %s (Price: %.2f, Quantity: %d)\n", 
-        //         i + 1, stock.getName(), stock.getPrice(), stock.getQuantity()));
-        // }
-        
+    
         return printer.toString();
     }
+    
     
     
     public boolean purchase(int stockNo, int quantity) {
@@ -260,12 +222,17 @@ public class StockServer {
         }
     }
 
-    public Double checkBalance() {
-        Double stockValue = 0.0; 
+    public String checkBalance() {
+        Double stockValue = 0.0;
         for (StockInformation stockInfo : userStocks) {
             Stock selectedStock = stockInfo.getStock();
-            stockValue = stockValue +(selectedStock.getPrice() * selectedStock.getQuantity());
+            stockValue = stockValue + (selectedStock.getPrice() * selectedStock.getQuantity());
         }
-        return stockValue + userMoney;
+        Double totalBalance = stockValue + userMoney;
+
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");  // Format to two decimal places with commas
+
+        return decimalFormat.format(totalBalance);  // Convert to millions and apply formatting
     }
+    
 }
