@@ -1,5 +1,4 @@
 package stocktrader.server;
-import java.util.Objects;
 
 public class Stock {
     private String name;
