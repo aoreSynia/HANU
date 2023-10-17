@@ -27,7 +27,7 @@ public class StockServer {
         stocks = readStockInfo("data\\StockInfo.txt");
     }
     //read user's accounts
-    public ArrayList<User> readUserList(String userListFileName) {
+    private ArrayList<User> readUserList(String userListFileName) {
         ArrayList<User> users = new ArrayList<>();
         
         try (BufferedReader reader = new BufferedReader(new FileReader(userListFileName))) {
@@ -48,7 +48,7 @@ public class StockServer {
         return users;
     }
     // read Stocks method
-    public ArrayList<Stock> readStockInfo(String stocks_fileName){
+    private ArrayList<Stock> readStockInfo(String stocks_fileName){
         ArrayList<Stock> stocks = new ArrayList<>();
         
         try (BufferedReader reader = new BufferedReader(new FileReader(stocks_fileName))) {
@@ -71,7 +71,7 @@ public class StockServer {
         return stocks;
     }
     //read userdata
-    public void readUserData(String userDataFileName, String historyFileName) {
+    private void readUserData(String userDataFileName, String historyFileName) {
         userStocks = new ArrayList<>();
         userHistory = new ArrayList<>();
         
@@ -176,67 +176,8 @@ public class StockServer {
     
         return printer.toString();
     }
+
     
-
-//     public boolean purchase(int stockNo, int quantity) {
-//     if (stockNo > 0 && stockNo <= stocks.size()) {
-//         Stock selectedStock = stocks.get(stockNo - 1);
-
-//         if (selectedStock.getQuantity() >= quantity) {
-//             double totalValue = selectedStock.getPrice() * quantity;
-
-//             if (userMoney >= totalValue) {
-//                 // Cập nhật số lượng cổ phiếu đã mua
-//                 selectedStock.setQuantity(selectedStock.getQuantity() - quantity);
-
-//                 // Cập nhật vào ví của người dùng
-//                 userMoney -= totalValue;
-
-//                 // Lưu thông tin giao dịch
-//                 userHistory.add(new StockInformation(3, selectedStock, LocalDate.now()));
-                
-//                 // Sử dụng storeInformation để lưu thông tin giao dịch vào lịch sử
-//                 String userDataFileName = "data\\userdata\\" + username_loggedin + "_history.txt";
-//                 storeInformation(userDataFileName, userHistory.get(userHistory.size() - 1));
-
-//                 return true;
-//             }
-//         }
-//     }
-
-//     return false;
-// }
-
-//     public boolean sellStock(int stockNo, int quantity) {
-//         if (stockNo > 0 && stockNo <= userStocks.size()) {
-//             StockInformation selectedStockInfo = userStocks.get(stockNo - 1);
-//             Stock selectedStock = selectedStockInfo.getStock();
-
-//             if (selectedStockInfo.getQuantity() >= quantity) {
-//                 double totalValue = selectedStock.getPrice() * quantity;
-//                 userMoney += totalValue;
-
-//                 // Cập nhật số lượng cổ phiếu đã bán
-//                 selectedStockInfo.setQuantity(selectedStockInfo.getQuantity() - quantity);
-
-//                 // Nếu người dùng đã bán hết cổ phiếu, loại bỏ nó khỏi danh sách userStocks
-//                 if (selectedStockInfo.getQuantity() == 0) {
-//                     userStocks.remove(selectedStockInfo);
-//                 }
-
-//                 // Lưu thông tin giao dịch
-//                 userHistory.add(new StockInformation(4, selectedStock, LocalDate.now(), quantity));
-                
-//                 // Sử dụng storeInformation để lưu thông tin giao dịch vào lịch sử
-//                 String userDataFileName = "data\\userdata\\" + username_loggedin + "_history.txt";
-//                 storeInformation(userDataFileName, userHistory.get(userHistory.size() - 1));
-
-//                 return true;
-//             }
-//         }
-
-//         return false;
-//     }
     public boolean purchase(int stockNo, int quantity) {
         if (stockNo > 0 && stockNo <= stocks.size()) {
             Stock selectedStock = stocks.get(stockNo - 1);
@@ -372,8 +313,7 @@ public class StockServer {
     
         return currentPrices;
     }
-    // Phương thức storeInformation dùng để lưu thông tin giao dịch
-    // Phương thức storeInformation dùng để lưu thông tin giao dịch
+   
     // Phương thức storeInformation dùng để lưu thông tin giao dịch
     private void storeInformation(String historyFileName, StockInformation info) {
         try (FileWriter writer = new FileWriter(historyFileName, true)) {
