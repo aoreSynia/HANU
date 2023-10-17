@@ -1,20 +1,28 @@
 package stocktrader.server;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class StockInformation {
 
     private Integer commandType;
     private Stock stock;
-    private LocalTime purchaseDate;
+    private LocalDate purchaseDate;
+    // private LocalTime purchaseDate;
 
     public StockInformation() {
     }
 
-    public StockInformation(Integer commandType, Stock stock, LocalTime purchaseDate) {
+    public StockInformation(Integer commandType, Stock stock, LocalDate purchaseDate) {
         this.commandType = commandType;
         this.stock = stock;
         this.purchaseDate = purchaseDate;
+    }
+    public StockInformation(Integer commandType, Stock stock, LocalDate purchaseDate, Integer quantity) {
+        this.commandType = commandType;
+        this.stock = stock;
+        this.purchaseDate = purchaseDate;
+        this.stock.setQuantity(quantity);
     }
 
     public Integer getCommandType() {
@@ -33,12 +41,18 @@ public class StockInformation {
         this.stock = stock;
     }
 
-    public LocalTime getPurchaseDate() {
+    public LocalDate getPurchaseDate() {
         return this.purchaseDate;
     }
 
-    public void setPurchaseDate(LocalTime purchaseDate) {
+    public void setPurchaseDate(LocalDate purchaseDate) {
         this.purchaseDate = purchaseDate;
+    }
+    public int getQuantity() {
+        return stock.getQuantity();
+    }
+    public void setQuantity(Integer quantity) {
+        stock.setQuantity(quantity);
     }
 
 }
