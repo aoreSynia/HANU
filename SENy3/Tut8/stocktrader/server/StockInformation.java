@@ -20,9 +20,9 @@ public class StockInformation {
     }
     public StockInformation(Integer commandType, Stock stock, LocalDate purchaseDate, Integer quantity) {
         this.commandType = commandType;
-        this.stock = stock;
+        this.stock = new Stock(stock.getName(), stock.getPrice(), quantity);
         this.purchaseDate = purchaseDate;
-        this.stock.setQuantity(quantity);
+        // this.stock.setQuantity(quantity);
     }
 
     public Integer getCommandType() {

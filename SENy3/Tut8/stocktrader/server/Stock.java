@@ -14,6 +14,10 @@ public class Stock {
         this.price = price;
         this.quantity = quantity;
     }
+    public Stock(String name, Double price){
+        this.name = name;
+        this.price = price;
+    }
 
     public String getName() {
         return this.name;

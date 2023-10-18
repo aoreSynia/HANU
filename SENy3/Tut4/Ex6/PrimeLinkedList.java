@@ -1,4 +1,4 @@
-package SENy3.Tut4.Ex6;
+package Tut4.Ex6;
 
 
 import java.util.Iterator;

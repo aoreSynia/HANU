@@ -225,35 +225,44 @@ public class StockServer {
         if (stockNo > 0 && stockNo <= userStocks.size()) {
             StockInformation selectedStockInfo = userStocks.get(stockNo - 1);
             Stock selectedStock = selectedStockInfo.getStock();
-
+    
             if (selectedStockInfo.getQuantity() >= quantity) {
                 double totalValue = selectedStock.getPrice() * quantity;
-
+    
                 selectedStockInfo.setQuantity(selectedStockInfo.getQuantity() - quantity);
-
+    
                 // If all units of the stock are sold, remove it from userStocks
                 if (selectedStockInfo.getQuantity() == 0) {
                     userStocks.remove(selectedStockInfo);
                 }
-
+    
                 // Cập nhật ví của người dùng
                 userMoney += totalValue;
-
+    
+                // Cập nhật số lượng cổ phiếu trên thị trường
+                for (Stock stock : stocks) {
+                    if (stock.getName().equals(selectedStock.getName())) {
+                        stock.setQuantity(stock.getQuantity() + quantity);
+                        break;
+                    }
+                }
+    
                 // Lưu thông tin giao dịch
                 userHistory.add(new StockInformation(4, selectedStock, LocalDate.now(), quantity));
-                
+    
                 // Lưu thông tin giao dịch vào lịch sử
                 String userDataFileName = "data\\userdata\\" + username_loggedin + "_history.txt";
                 storeInformation(userDataFileName, userHistory.get(userHistory.size() - 1));
                 updateUserFile(username_loggedin, userMoney, userStocks);
-
+    
                 return true;
             }
         }
-
+    
         return false;
     }
-
+    
+    
 
     
 
@@ -338,7 +347,7 @@ public class StockServer {
         try (FileWriter writer = new FileWriter("data\\userdata\\" + username + ".txt", false)) {
             // Write the user's money
             writer.write("Money " + money + "\n");
-
+    
             // Write the user's stocks
             for (StockInformation stockInfo : userStocks) {
                 Stock stock = stockInfo.getStock();
@@ -348,9 +357,13 @@ public class StockServer {
             e.printStackTrace(); // Handle the exception properly in your application
         }
     }
-
-
-
-
-
+    public void updateStockInfoFile() {
+        try (FileWriter writer = new FileWriter("data\\StockInfo.txt", false)) {
+            for (Stock stock : stocks) {
+                writer.write(stock.getName() + " " + stock.getPrice() + " " + stock.getQuantity() + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Xử lý ngoại lệ một cách phù hợp trong ứng dụng của bạn
+        }
+    }
 }
