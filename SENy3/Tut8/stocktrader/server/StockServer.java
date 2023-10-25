@@ -18,7 +18,7 @@ public class StockServer {
     private ArrayList<StockInformation> userStocks;
     private ArrayList<StockInformation> userHistory;
     private Double userMoney;
-    private boolean isLoggedIn;
+    // private boolean isLoggedIn;
     public LocalTime currentDate; 
     private String username_loggedin;
 
@@ -341,7 +341,7 @@ public class StockServer {
             e.printStackTrace(); // Xử lý ngoại lệ một cách phù hợp trong ứng dụng của bạn
         }
     }
-    
+
 
     private void updateUserFile(String username, double money, List<StockInformation> userStocks) {
         try (FileWriter writer = new FileWriter("data\\userdata\\" + username + ".txt", false)) {

@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Engine {
 
@@ -21,50 +20,24 @@ public class Engine {
      */
     public int loadDocs(String dirname) {
         int numberOfDocs = 0;
-        FileInputStream fileInputStream;
-        BufferedReader bufferedReader;
-        try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirname))) {
-            for (Path file:stream) {
-                fileInputStream = new FileInputStream(file.toFile().getAbsolutePath());
-                bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-                String line = bufferedReader.readLine();
-                //System.out.println(line);
-                String temp = bufferedReader.readLine();
-                //System.out.println(temp);
-                Doc a = new Doc(line + "\n" +temp);
-                docs[numDocs] = a;
-                numberOfDocs++;
-                numDocs++;
-                //System.out.println(numDocs);
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirname))) {
+            for (Path file : stream) {
+                try (FileInputStream fileInputStream = new FileInputStream(file.toFile().getAbsolutePath());
+                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream))) {
+                    String line = bufferedReader.readLine();
+                    String temp = bufferedReader.readLine();
+                    Doc a = new Doc(line + "\n" + temp);
+                    docs[numDocs] = a;
+                    numberOfDocs++;
+                    numDocs++;
+                }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // throw new RuntimeException(e);
         }
         return numberOfDocs;
     }
-//     public int loadDocs(String dirname) {
-//     int numberOfDocs = 0;
-//     try (Stream<Path> stream = Files.list(Paths.get(dirname))) {
-//         stream.forEach(file -> {
-//             try {
-//                 FileInputStream fileInputStream = new FileInputStream(file.toFile().getAbsolutePath());
-//                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream))) {
-//                     String line = bufferedReader.readLine();
-//                     String temp = bufferedReader.readLine();
-//                     Doc a = new Doc(line + "\n" + temp);
-//                     docs[numDocs] = a;
-//                     numDocs++;
-//                     numDocs++;
-//                 }
-//             } catch (IOException e) {
-//                 throw new RuntimeException(e);
-//             }
-//         });
-//     } catch (IOException e) {
-//         throw new RuntimeException(e);
-//     }
-//     return numberOfDocs;
-// }
 
     /**
      * Returns an array of documents in the original order.
@@ -78,9 +51,10 @@ public class Engine {
      * results. Refer to the classes above to know the expected search results.
      */
     public List<Result> search(Query q) {
+        int size = 0;
         List<Result> results = new ArrayList<>();
         for (int i = 0; i < numDocs; i++) {
-            if (q.matchAgainst(docs[i]).size() != 0) {
+            if(q.matchAgainst(docs[i]).size() != 0) {
                 Result r = new Result(docs[i], q.matchAgainst(docs[i]));
                 results.add(r);
             }

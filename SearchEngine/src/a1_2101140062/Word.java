@@ -28,17 +28,16 @@ public class Word {
     boolean isKeyword() {
 
 
-        if(text.isEmpty()) {
+        if(this.getText().isEmpty()) {
             return false;
         }
 
-        if (stopWords.contains(text.toLowerCase())) {
+        if (stopWords.contains(this.getText().toLowerCase())) {
             return false;
         }
 
-
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) <= '9' && text.charAt(i) >= '0') {
+        for (int i = 0; i < this.getText().length(); i++) {
+            if (this.getText().charAt(i) <= '9' && this.getText().charAt(i) >= '0') {
                 return false;
             }
         }
@@ -90,51 +89,41 @@ public class Word {
      * Construct and return a complete Engine.Word object from raw text.
      */
     public static Word createWord(String rawText) {
-        String prefix = "";
-        String text = "";
-        String suffix = "";
+        String pre = "";
+        String txt = "";
+        String suf = "";
         int i;
         for (i = 0; i < rawText.length(); i++) {
-            // This character is not an alphabet letter
-            if (!isALetter(rawText.charAt(i))) {
-                prefix += rawText.charAt(i);
+            //This character is not a alphabet letter
+            if ((!isALetter(rawText.charAt(i)))) {
+                pre += rawText.charAt(i);
             } else {
                 break;
             }
         }
-    
         int j;
         for (j = i; j < rawText.length(); j++) {
             if (isALetter(rawText.charAt(j))) {
                 if ((rawText.charAt(j) == ',' && j > 1)) {
                     break;
-                } else if (rawText.charAt(j) == '.' &&
-                        (rawText.charAt(j - 1) > '9' || rawText.charAt(j - 1) < '0') &&
-                        (rawText.length() - j < 3)) {
+                } else if(rawText.charAt(j) == '.'
+                        && (rawText.charAt(j-1) > '9' || rawText.charAt(j-1) < '0')
+                        && (rawText.length() - j < 3)) {
                     break;
                 } else {
-                    text += rawText.charAt(j);
+                    txt += rawText.charAt(j);
                 }
             } else {
                 break;
             }
         }
-    
         int k;
         for (k = j; k < rawText.length(); k++) {
-            suffix += rawText.charAt(k);
+            suf += rawText.charAt(k);
         }
-    
-        // Handle the case where "suffix" contains "'s" and then a letter or number
-        if (suffix.startsWith("'s") && suffix.length() > 2 && isALetter(suffix.charAt(2))) {
-            text += suffix;
-            suffix = "";
-        }
-    
-        return new Word(prefix, text, suffix);
-    }
-    
 
+        return new Word(pre, txt, suf);
+    }
 
     public static boolean isALetter(char i) {
         if ((i <= 'z' && i >= 'a') || (i <= 'Z' && i >= 'A') || (i == ',') ||
@@ -152,13 +141,14 @@ public class Word {
         stopWords = new HashSet<>();
         try {
             File file = new File(fileName);
-            Scanner dectector = new Scanner(file);
+            Scanner scanner = new Scanner(file);
 
-            while (dectector.hasNext()) {
-                String word = dectector.next();
+            int count = 0;
+            while (scanner.hasNext()) {
+                String word = scanner.next();
                 stopWords.add(word);
+                count++;
             }
-            dectector.close();
         } catch (FileNotFoundException e) {
 
         }
@@ -167,7 +157,6 @@ public class Word {
         } else {
             return true;
         }
-
     }
 
 }

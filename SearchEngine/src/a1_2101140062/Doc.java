@@ -35,8 +35,6 @@ public class Doc {
             body.add(temp);
             allWords.add(temp);
         }
-        scanner1.close();
-        scanner2.close();
     }
 
     /**Returns the document’s title as a list of Engine.Word objects.

@@ -1,7 +1,6 @@
 package stocktrader.server;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class StockInformation {
 

@@ -1,135 +1,71 @@
+
 package a1_2101140062;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Result implements Comparable<Result> {
 
-    private List<Match> matchList = new ArrayList<>();
-
+    private final List<Match> matchList;
     private final Doc doc;
 
-    /**
-     * A constructor to initialize a Engine.Result object with the related document and the list
-     * of matches
-     * @param d: Engine.Doc
-     * @param matches: List
-     */
-    public Result(Doc d, List<Match> matches) {
-        this.doc = d;
-        this.matchList = matches;
+    public Result(Doc doc, List<Match> matchList) {
+        this.doc = doc;
+        this.matchList = matchList;
     }
 
-    /**
-     * @return matches.
-     */
     public List<Match> getMatches() {
-        return this.matchList;
+        return matchList;
     }
 
-    /**
-     * @return total Frequency
-     */
     public int getTotalFrequency() {
-        return getMatches().get(0).getFreq();
-       //return totalFreq;
+        return matchList.isEmpty() ? 0 : matchList.get(0).getFreq();
     }
 
-    /**
-     *
-     * @return Average First Index
-     */
     public double getAverageFirstIndex() {
-        double sumFirstIndex = 0.0;
-        for (Match match : matchList) {
-            sumFirstIndex += match.getFirstIndex();
-        }
-        //System.out.println(matchList.size());
-        return sumFirstIndex / (double) matchList.size();
+        double sumFirstIndex = matchList.stream().mapToDouble(Match::getFirstIndex).sum();
+        return matchList.isEmpty() ? 0.0 : sumFirstIndex / matchList.size();
     }
-
-    /**
-     Highlight the matched words in the document using HTML markups. For a
-     matched word in the document’s title, put the tag <u> and </u> around the
-     word’s text part (the <u> tag should not affect the word’s prefix and suffix). For a
-     matched word in the document’s body, surround the word’s text part with the tag
-     <b> and </b>.
-     */
-
 
     public String htmlHighlight() {
-        String htmlTitle = "";
-        String htmlBody = "";
+        StringBuilder htmlTitle = new StringBuilder();
+        StringBuilder htmlBody = new StringBuilder();
         List<Word> list = new ArrayList<>();
-        for (int i = 0; i < matchList.size(); i++) {
-            list.add(matchList.get(i).getWord());
+
+        for (Match match : matchList) {
+            list.add(match.getWord());
         }
 
-        for (int i = 0; i < doc.titleLength()-1; i++) {
-            String tmpTitle;
-            if (list.contains(doc.getAllWords().get(i))) {
-                tmpTitle = doc.getAllWords().get(i).getPrefix()
-                        + "<u>" + doc.getAllWords().get(i).getText() + "</u>"
-                        + doc.getAllWords().get(i).getSuffix() + " ";
-            } else {
-                tmpTitle = doc.getAllWords().get(i).getPrefix()
-                        + doc.getAllWords().get(i).getText()
-                        + doc.getAllWords().get(i).getSuffix() + " ";
-            }
-            htmlTitle += tmpTitle;
+        for (int i = 0; i < doc.titleLength(); i++) {
+            Word word = doc.getAllWords().get(i);
+            String formattedWord = formatWord(word, list, "<u>", "</u>");
+            htmlTitle.append(formattedWord).append(" ");
         }
 
-        if (list.contains(doc.getAllWords().get(doc.titleLength()-1))) {
-            htmlTitle += doc.getAllWords().get(doc.titleLength()-1).getPrefix() + "<u>"
-                    + doc.getAllWords().get(doc.titleLength()-1).getText() + "</u>"
-                    + doc.getAllWords().get(doc.titleLength()-1).getSuffix();
-        } else {
-            htmlTitle += doc.getAllWords().get(doc.titleLength() - 1).getPrefix()
-                    + doc.getAllWords().get(doc.titleLength() - 1).getText()
-                    + doc.getAllWords().get(doc.titleLength() - 1).getSuffix();
+        for (int i = doc.titleLength(); i < doc.getAllWords().size(); i++) {
+            Word word = doc.getAllWords().get(i);
+            String formattedWord = formatWord(word, list, "<b>", "</b>");
+            htmlBody.append(formattedWord).append(" ");
         }
 
-        for (int i = doc.titleLength(); i < doc.getAllWords().size()-1; i++) {
-            String tmpBody;
-            if (list.contains(doc.getAllWords().get(i))) {
-                tmpBody = doc.getAllWords().get(i).getPrefix()
-                        + "<b>" + doc.getAllWords().get(i).getText() + "</b>"
-                        + doc.getAllWords().get(i).getSuffix() + " ";
-            } else {
-                tmpBody = doc.getAllWords().get(i).getPrefix()
-                        + doc.getAllWords().get(i).getText()
-                        + doc.getAllWords().get(i).getSuffix() + " ";
-            }
-            htmlBody += tmpBody;
-        }
-        if (list.contains(doc.getAllWords().get(doc.getAllWords().size()-1))) {
-            htmlBody += doc.getAllWords().get(doc.getAllWords().size()-1).getPrefix() + "<b>"
-                    + doc.getAllWords().get(doc.getAllWords().size()-1).getText() + "</b>"
-                    + doc.getAllWords().get(doc.getAllWords().size()-1).getSuffix();
-        } else {
-            htmlBody += doc.getAllWords().get(doc.getAllWords().size() - 1).getPrefix()
-                    + doc.getAllWords().get(doc.getAllWords().size() - 1).getText()
-                    + doc.getAllWords().get(doc.getAllWords().size() - 1).getSuffix();
-        }
+        String titleHtml = "<h3>" + htmlTitle.toString().trim() + "</h3>";
+        String bodyHtml = "<p>" + htmlBody.toString().trim() + "</p>";
 
-        return "<h3>" + htmlTitle + "</h3>" + "<p>" + htmlBody + "</p>";
+        return titleHtml + bodyHtml;
     }
 
-    /**
-     * These are criteria to determine if Engine.Result A is greater than Engine.Result B
-     * (in descending order of priority):
-     * Rev 1.1 <2021-dec-14>
-     *  A has greater match count than B
-     *  A has greater total frequency than B
-     *  A has lower average first index than B
-     */
+    private String formatWord(Word word, List<Word> matchList, String openTag, String closeTag) {
+        if (matchList.contains(word)) {
+            return word.getPrefix() + openTag + word.getText() + closeTag + word.getSuffix();
+        } else {
+            return word.getPrefix() + word.getText() + word.getSuffix();
+        }
+    }
+
+
     @Override
     public int compareTo(Result o) {
-        if(this.getMatches().size() > o.getMatches().size()) {
+        if (this.getMatches().size() > o.getMatches().size()) {
             return -1;
         } else if (this.getMatches().size() < o.getMatches().size()) {
             return 1;
@@ -137,7 +73,9 @@ public class Result implements Comparable<Result> {
             return -2;
         } else if (this.getTotalFrequency() < o.getTotalFrequency()) {
             return 2;
-        } else return 0;
+        } else {
+            return 0;
+        }
 
     }
 

@@ -3,6 +3,7 @@ package a1_2101140062;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Query {
 
@@ -38,24 +39,23 @@ public class Query {
      * information about search matches.
      */
     public List<Match> matchAgainst(Doc d) {
-        
-        List<Match> matches = new ArrayList<>();
-        for (int i = 0; i < keyWords.size(); i++) {
-            int freq = 0, firstIndex = 0;
-            if (d != null && d.getAllWords().contains(keyWords.get(i))) {
+        List<Match> matches = keyWords.stream()
+            .filter(keyword -> d != null && d.getAllWords().contains(keyword))
+            .map(keyword -> {
+                int freq = 0, firstIndex = 0;
                 for (int j = 0; j < d.getAllWords().size(); j++) {
-                    if (d.getAllWords().get(j).equals(keyWords.get(i))) {
+                    if (d.getAllWords().get(j).equals(keyword)) {
                         freq++;
                         firstIndex = j;
                     }
                 }
-            }
-            if (freq != 0 || firstIndex != 0) {
-                matches.add(new Match(d, keyWords.get(i), freq, firstIndex));
-            }
-        }
-        matches.sort(Match::compareTo);
+                return new Match(d, keyword, freq, firstIndex);
+            })
+            .filter(match -> match.getFreq() != 0 || match.getFirstIndex() != 0)
+            .sorted(Match::compareTo)
+            .collect(Collectors.toList());
         return matches;
     }
+
 
 }
